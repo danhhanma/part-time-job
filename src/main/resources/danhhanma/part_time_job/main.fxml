@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Text?>
+
+<StackPane fx:id="rootPane" styleClass="root-pane" stylesheets="@../../css/main.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="danhhanma.part_time_job.controllerapp.MainViewController">
+    <AnchorPane>
+        <HBox fx:id="mainContainer" spacing="0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <!-- Phần bên trái: Giới thiệu -->
+            <StackPane fx:id="introPane" styleClass="intro-pane" HBox.hgrow="ALWAYS">
+                <VBox alignment="CENTER_LEFT" styleClass="intro-content" StackPane.alignment="TOP_LEFT">
+                    <Text styleClass="header-text" text="Part time job in the feature" />
+                    <Text styleClass="sub-text" text="Part-time chất, chọn việc siêu nhanh." wrappingWidth="400" />
+                    <Button styleClass="learn-more-btn" text="Learn more" />
+                </VBox>
+                <!-- Decoration shapes -->
+                <Rectangle height="270.0" styleClass="decoration-rect-1" width="120.0" />
+                <Rectangle height="150.0" styleClass="decoration-rect-2" width="150.0" />
+            </StackPane>
+
+            <!-- Phần bên phải: Form container -->
+            <StackPane fx:id="formPane" styleClass="form-pane" HBox.hgrow="ALWAYS">
+                <VBox fx:id="formContent" alignment="CENTER" spacing="15" styleClass="form-content">
+                    <StackPane fx:id="roundedFormContainer" styleClass="rounded-form-container">
+                        <!-- Login Form -->
+                        <VBox fx:id="loginForm" alignment="CENTER" spacing="15">
+                            <Text styleClass="form-header" text="Đăng nhập" />
+                            <TextField fx:id="loginEmailField" promptText="Email Address" styleClass="input-field" />
+                            <PasswordField fx:id="loginPasswordField" promptText="Password" styleClass="input-field" />
+                            <Button fx:id="employerLoginButton" maxWidth="Infinity" styleClass="signup-btn" text="Đăng nhập nhà tuyển dụng" />
+                            <Button fx:id="jobSeekerLoginButton" maxWidth="Infinity" styleClass="signup-btn" text="Đăng nhập người tìm việc" />
+                            <HBox alignment="CENTER" spacing="5">
+                                <Text styleClass="login-text" text="Bạn chưa có tài khoản?" />
+                                <Hyperlink fx:id="registerLink" styleClass="login-link" text="Đăng ký" />
+                            </HBox>
+                        </VBox>
+
+                        <!-- Register Form -->
+                        <VBox fx:id="registerForm" alignment="CENTER" spacing="15" visible="false" managed="false">
+                            <Text styleClass="form-header" text="Đăng ký" />
+                            <TextField fx:id="regNameField" promptText="Họ và tên" styleClass="input-field" />
+                            <TextField fx:id="regEmailField" promptText="Email Address" styleClass="input-field" />
+                            <ComboBox fx:id="regRoleComboBox" promptText="Chọn vai trò" styleClass="input-field" />
+                            <PasswordField fx:id="regPasswordField" promptText="Password" styleClass="input-field" />
+                            <PasswordField fx:id="regConfirmPasswordField" promptText="Xác nhận Password" styleClass="input-field" />
+                            <Button fx:id="registerButton" maxWidth="Infinity" styleClass="signup-btn" text="Đăng ký" />
+                            <HBox alignment="CENTER" spacing="5">
+                                <Text styleClass="login-text" text="Bạn đã có tài khoản?" />
+                                <Hyperlink fx:id="loginLink" styleClass="login-link" text="Đăng nhập" />
+                            </HBox>
+                        </VBox>
+
+                        <!-- Supplementary Form for Employer -->
+                        <VBox fx:id="supplementaryForm" alignment="CENTER" spacing="15" visible="false" managed="false">
+                            <Text styleClass="form-header" text="Thông tin bổ sung (Nhà tuyển dụng)" />
+                            <ComboBox fx:id="orgTypeComboBox" promptText="Loại cơ quan" styleClass="input-field" />
+                            <TextField fx:id="otherOrgTypeField" promptText="Nhập loại cơ quan khác" styleClass="input-field" visible="false" managed="false" />
+                            <Button fx:id="submitSupplementaryButton" maxWidth="Infinity" styleClass="signup-btn" text="Hoàn tất" />
+                            <HBox alignment="CENTER" spacing="5">
+                                <Text styleClass="login-text" text="Quay lại đăng ký?" />
+                                <Hyperlink fx:id="backToRegisterLink" styleClass="login-link" text="Đăng ký" />
+                            </HBox>
+                        </VBox>
+                    </StackPane>
+                </VBox>
+            </StackPane>
+        </HBox>
+    </AnchorPane>
+</StackPane>

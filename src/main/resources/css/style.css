@@ -1,0 +1,16 @@
+.container{
+    -fx-background-radius: 5;
+}
+.button-all{
+    -fx-cursor: hand;
+}
+
+.hyperlink{
+    -fx-cursor: hand;
+    -fx-text-fill: #558FF6;
+    -fx-underline: false;
+}
+
+.hyperlink:hover{
+    -fx-underline: true;
+}

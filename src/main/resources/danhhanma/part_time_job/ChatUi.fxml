@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:id="root" xmlns:fx="http://javafx.com/fxml" fx:controller="danhhanma.part_time_job.chat.RealChatController">
+
+    <!-- LEFT REGION -->
+    <left>
+        <VBox fx:id="userList" minWidth="200" spacing="5" style="-fx-background-color: #f0f0f0;">
+            <Label text="Users" style="-fx-font-weight: bold; -fx-padding: 10;"/>
+            <ListView fx:id="userListView"/>
+        </VBox>
+    </left>
+
+    <!-- CENTER REGION -->
+    <center>
+        <VBox fx:id="chatArea" spacing="5" alignment="TOP_LEFT">
+            <Label fx:id="chatHeader" text="Chat" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 10;"/>
+            <ScrollPane fx:id="chatScrollPane" fitToWidth="true" fitToHeight="true" VBox.vgrow="ALWAYS">
+                <VBox fx:id="messageBox" prefWidth="600"  spacing="5" style="-fx-padding: 10;"/>
+            </ScrollPane>
+            <HBox spacing="5" style="-fx-padding: 10;">
+                <TextField fx:id="inputField" HBox.hgrow="ALWAYS"/>
+                <Button fx:id="sendButton" text="Send"/>
+            </HBox>
+        </VBox>
+    </center>
+
+</BorderPane>

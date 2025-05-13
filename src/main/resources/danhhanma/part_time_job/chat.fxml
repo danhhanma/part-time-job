@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox fx:id="chatBox" alignment="BOTTOM_RIGHT" styleClass="chat-box-messenger" stylesheets="@../../css/facebook.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="danhhanma.part_time_job.chatbox.ChatController">
+    <padding>
+        <Insets bottom="8" left="8" right="8" top="8" />
+    </padding>
+    <HBox alignment="CENTER_LEFT" spacing="12.0" styleClass="chat-header-messenger" stylesheets="@../../css/facebook.css">
+        <ImageView fx:id="contactAvatar" fitHeight="48" fitWidth="48" styleClass="circular-avatar" />
+        <VBox spacing="2">
+            <Label fx:id="chatTitle" styleClass="chat-title-dark" />
+            <Label fx:id="statusLabel" styleClass="status-label-dark" text="Hoạt động 6 phút trước" />
+        </VBox>
+        <Region HBox.hgrow="ALWAYS" />
+        <Button styleClass="icon-btn">
+         <graphic>
+            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../img/call.png" />
+               </image>
+            </ImageView>
+         </graphic></Button>
+        <Button styleClass="icon-btn">
+         <graphic>
+            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../img/video.png" />
+               </image>
+            </ImageView>
+         </graphic></Button>
+        <Button onAction="#closeChat" styleClass="icon-btn">
+         <graphic>
+            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../img/close.png" />
+               </image>
+            </ImageView>
+         </graphic></Button>
+    </HBox>
+    <ScrollPane fx:id="messageArea" fitToWidth="true" stylesheets="@../../css/facebook.css" VBox.vgrow="ALWAYS">
+        <VBox fx:id="messageContainer" spacing="12" styleClass="message-container-dark">
+            <padding>
+                <Insets bottom="15" left="20" right="20" top="15" />
+            </padding>
+        </VBox>
+      <styleClass>
+         <String fx:value="message-area-dark" />
+         <String fx:value="viewport" />
+      </styleClass>
+    </ScrollPane>
+    <HBox alignment="CENTER_LEFT" spacing="3.0" styleClass="input-area-messenger" stylesheets="@../../css/facebook.css">
+        <Button fx:id="imageButton" onAction="#sendImage" styleClass="icon-btn">
+         <graphic>
+            <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../img/photo.png" />
+               </image>
+            </ImageView>
+         </graphic></Button>
+      <Button fx:id="fileButton" onAction="#sendFile" styleClass="icon-btn">
+         <graphic>
+            <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../img/file.png" />
+               </image>
+            </ImageView>
+         </graphic>
+      </Button>
+        <Button fx:id="folderButton" onAction="#sendFolder" styleClass="icon-btn">
+         <graphic>
+            <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../img/folder.png" />
+               </image>
+            </ImageView>
+         </graphic></Button>
+        <TextField fx:id="messageInput" promptText="Nhập tin nhắn..." styleClass="message-input-messenger" HBox.hgrow="ALWAYS" />
+        <Button fx:id="sendButton" onAction="#sendMessage" styleClass="icon-btn">
+         <graphic>
+            <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../img/send.png" />
+               </image>
+            </ImageView>
+         </graphic></Button>
+    </HBox>
+</VBox>

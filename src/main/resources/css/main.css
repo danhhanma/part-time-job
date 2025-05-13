@@ -1,0 +1,241 @@
+/* styles.css */
+.root-pane {
+  -fx-background-color: #f8f9fa;
+}
+
+/* Phần giới thiệu bên trái */
+.intro-pane {
+  -fx-background-color: linear-gradient(to right bottom, #2b5876, #4e4376);
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 15, 0, 0, 0);
+  -fx-min-width: 400px;
+  -fx-pref-width: 50%;
+}
+
+.intro-content {
+  -fx-padding: 30px;
+  -fx-spacing: 25;
+  -fx-min-width: 400px;
+}
+
+.rounded-form-container {
+  -fx-background-color: white;
+  -fx-background-radius: 20;
+  -fx-border-radius: 20;
+  -fx-padding: 20;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 10, 0, 0, 5);
+}
+
+.header-text {
+  -fx-font-size: 42px;
+  -fx-font-weight: bold;
+  -fx-fill: white;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 5, 0, 0, 2);
+}
+
+.sub-text {
+  -fx-font-size: 18px;
+  -fx-fill: rgba(255, 255, 255, 0.9);
+  -fx-line-spacing: 8;
+}
+
+.learn-more-btn {
+  -fx-background-color: linear-gradient(to right, #ff9a9e, #fad0c4);
+  -fx-text-fill: #333333;
+  -fx-font-size: 16px;
+  -fx-font-weight: bold;
+  -fx-padding: 12 25;
+  -fx-background-radius: 30;
+  -fx-cursor: hand;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 8, 0, 0, 3);
+  -fx-min-width: 180px;
+  -fx-min-height: 45px;
+}
+
+.learn-more-btn:hover {
+  -fx-background-color: linear-gradient(to right, #ff8a8e, #f9c0b4);
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 10, 0, 0, 4);
+}
+
+/* Decoration elements */
+.decoration-rect-1 {
+  -fx-fill: rgba(255, 255, 255, 0.15);
+  -fx-arc-width: 30;
+  -fx-arc-height: 30;
+  -fx-rotate: 35;
+  -fx-translate-x: -180;
+  -fx-translate-y: -120;
+}
+
+.decoration-rect-2 {
+  -fx-fill: rgba(255, 255, 255, 0.08);
+  -fx-arc-width: 60;
+  -fx-arc-height: 60;
+  -fx-rotate: -20;
+  -fx-translate-x: 180;
+  -fx-translate-y: 140;
+}
+
+/* Phần form bên phải */
+.form-pane {
+  -fx-background-color: white;
+  -fx-alignment: center;
+  -fx-min-width: 400px;
+  -fx-pref-width: 50%;
+  -fx-max-width: Infinity;
+}
+
+.form-content {
+  -fx-padding: 40px;
+  -fx-background-color: linear-gradient(
+    from 0% 0% to 100% 100%,
+    #a18cd1,
+    /* tím nhạt */ #fbc2eb,
+    /* hồng pastel */ #fddb92 /* vàng kem */
+  );
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 15, 0, 0, 0);
+  -fx-min-width: 350px;
+  -fx-max-width: Infinity;
+  -fx-pref-width: 100%;
+  -fx-hgap: 15;
+  -fx-vgap: 15;
+}
+
+.rounded-form-container {
+  -fx-background-color: linear-gradient(
+          from 0% 0% to 100% 100%,
+          #a18cd1,
+            /* tím nhạt */ #fbc2eb,
+            /* hồng pastel */ #fddb92 /* vàng kem */
+  );
+  -fx-background-radius: 20;
+  -fx-border-radius: 20;
+  -fx-padding: 20;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 10, 0, 0, 5);
+}
+
+.form-header {
+  -fx-font-size: 32px;
+  -fx-font-weight: bold;
+  -fx-fill: #2b5876;
+  -fx-margin-bottom: 25px;
+}
+
+.input-field {
+  -fx-background-color: #f5f5f5;
+  -fx-background-radius: 8;
+  -fx-padding: 15px;
+  -fx-font-size: 15px;
+  -fx-prompt-text-fill: #999999;
+  -fx-focus-color: #4e4376;
+  -fx-faint-focus-color: #4e437622;
+  -fx-min-width: 400px;
+  -fx-max-width: 400px;
+  -fx-pref-width: 400px;
+}
+
+.input-field:focused {
+  -fx-background-color: #ffffff;
+  -fx-border-color: #4e4376;
+  -fx-border-width: 1.5;
+  -fx-border-radius: 8;
+}
+
+/* ComboBox styling */
+.combo-box {
+  -fx-background-color: #f5f5f5;
+  -fx-background-radius: 8;
+  -fx-font-size: 15px;
+  -fx-prompt-text-fill: #999999;
+  -fx-focus-color: #4e4376;
+  -fx-faint-focus-color: #4e437622;
+  -fx-min-width: 400px;
+  -fx-max-width: 400px;
+  -fx-pref-width: 400px;
+  /*-fx-min-height: 51px;*/
+  /*-fx-max-height: 51px;*/
+  /*-fx-pref-height: 51px;*/
+}
+
+.combo-box:focused {
+  -fx-background-color: #ffffff;
+  -fx-border-color: #4e4376;
+  -fx-border-width: 1.5;
+  -fx-border-radius: 8;
+}
+
+.combo-box .list-cell {
+  -fx-background-color: transparent;
+  -fx-text-fill: #333333;
+  -fx-padding: 5px;
+}
+
+.combo-box .list-view {
+  -fx-background-color: white;
+  -fx-background-radius: 8;
+  -fx-border-radius: 8;
+  -fx-border-width: 1.5;
+}
+
+.combo-box .list-cell:hover {
+  -fx-background-color: #f0f0f0;
+}
+
+.combo-box .arrow-button {
+  -fx-background-color: transparent;
+  -fx-background-radius: 0;
+}
+
+
+
+.terms-box {
+  -fx-padding: 8 0;
+  -fx-min-width: 300px;
+  -fx-max-width: Infinity;
+  -fx-pref-width: 100%;
+}
+
+.terms-text {
+  -fx-font-size: 13px;
+  -fx-fill: #666666;
+}
+
+.terms-checkbox {
+  -fx-mark-color: #4e4376;
+}
+
+.signup-btn {
+  -fx-background-color: linear-gradient(to right, #2b5876, #4e4376);
+  -fx-text-fill: white;
+  -fx-font-size: 17px;
+  -fx-font-weight: bold;
+  -fx-padding: 15 25;
+  -fx-background-radius: 8;
+  -fx-cursor: hand;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 5, 0, 0, 3);
+  -fx-min-width: 400px;
+  -fx-max-width: 400px;
+  -fx-pref-width: 400px;
+}
+
+.signup-btn:hover {
+  -fx-background-color: linear-gradient(to right, #1a4766, #3d3366);
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 8, 0, 0, 4);
+}
+
+.login-text {
+  -fx-font-size: 15px;
+  -fx-fill: #666666;
+}
+
+.login-link {
+  -fx-font-size: 15px;
+  -fx-text-fill: #4e4376;
+  -fx-underline: false;
+  -fx-border-width: 0;
+  -fx-font-weight: bold;
+}
+
+.login-link:hover {
+  -fx-underline: true;
+  -fx-text-fill: #2b5876;
+}

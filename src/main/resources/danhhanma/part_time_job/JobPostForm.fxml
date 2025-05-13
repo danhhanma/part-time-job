@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<?import java.lang.String?>
+<StackPane fx:id="rootPane" prefHeight="800.0" prefWidth="1200.0" style="-fx-background-color: linear-gradient(to bottom, #F2F8FF, #DDEEFF);" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="danhhanma.part_time_job.JobPost.JobPostController">
+    <children>
+        <ScrollPane fitToWidth="true" fitToHeight="true" prefViewportHeight="700" prefViewportWidth="800">
+            <content>
+                <!-- Center wrapper -->
+                <VBox alignment="CENTER" prefWidth="Infinity" prefHeight="Infinity">
+                    <children>
+                        <!-- The actual form -->
+                        <VBox alignment="TOP_CENTER" spacing="15" maxWidth="600">
+                            <padding>
+                                <Insets top="30" bottom="30" left="40" right="40"/>
+                            </padding>
+                            <children>
+
+                                <!-- Title -->
+                                <Label text="Tạo bài đăng tuyển dụng" style="-fx-font-size: 24px; -fx-text-fill: #333; -fx-pref-height: 50" />
+
+                                <!-- Job Title -->
+                                <TextField fx:id="titleField" promptText="Tiêu đề công việc" prefWidth="500" >
+                                    <styleClass>
+                                        <String fx:value="text-field" />
+                                    </styleClass>
+                                </TextField>
+                                <Label text="" fx:id="titleErr" style="-fx-text-fill: #f71105;" prefWidth="500"/>
+                                <!-- Job Description -->
+                                <TextArea fx:id="overViewArea" promptText="Mô tả tổng quan" prefWidth="500" prefHeight="100">
+                                    <styleClass>
+                                        <String fx:value="text-area" />
+                                    </styleClass>
+                                </TextArea>
+                                <Label fx:id="overViewErr" style="-fx-text-fill: #f71105" prefWidth="500"/>
+                                <!-- Dynamic Key-Value Fields -->
+                                <VBox fx:id="kvBox" spacing="10" prefWidth="500">
+                                    <children>
+                                        <HBox spacing="10">
+                                            <Label text="Địa chỉ" fx:id="keyField" prefWidth="200" prefHeight="50"/>
+                                            <TextArea fx:id="valueArea" prefWidth="300" prefHeight="50"/>
+
+                                        </HBox>
+                                        <Label fx:id="addressErr" style="-fx-text-fill: #f71105" prefWidth="500"/>
+                                    </children>
+                                </VBox>
+
+                                <VBox fx:id="fieldsContainer" spacing="10" />
+                                <Label fx:id="desErr" style="-fx-font-size: 24px;-fx-text-fill: #f71105"/>
+                                <Button text="Thêm thuộc tính"  onAction="#handleAddField"/>
+
+                                <!-- Upload Pictures -->
+                                <Button fx:id="selectImagesButton" text="Chọn hình ảnh không gian làm việc"  prefWidth="500" onAction="#onSelectPictures"/>
+
+                                <ListView fx:id="picturesList" prefHeight="120" prefWidth="500" minHeight="120" minWidth="500">
+                                    <styleClass>
+                                        <String fx:value="image-list" />
+                                    </styleClass>
+                                </ListView>
+
+                                <!-- Submit Button -->
+                                <Button fx:id="submitButton" text="Đăng bài"
+                                        style="-fx-background-color: #28A745; -fx-text-fill: white;" prefWidth="200" prefHeight="40"
+                                onAction="#onSubmitPost">
+                                    <font>
+                                        <Font size="16.0"/>
+                                    </font>
+                                    <styleClass>
+                                        <String fx:value="button-all" />
+                                    </styleClass>
+                                </Button>
+
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </children>
+</StackPane>
