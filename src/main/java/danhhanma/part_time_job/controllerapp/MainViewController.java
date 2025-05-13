@@ -1,6 +1,7 @@
 package danhhanma.part_time_job.controllerapp;
 
-
+import danhhanma.part_time_job.Utils.Config;
+import danhhanma.part_time_job.Utils.LocalStorage;
 import danhhanma.part_time_job.application.FacebookView;
 import javafx.animation.FadeTransition;
 import javafx.collections.FXCollections;
@@ -10,6 +11,12 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.json.JSONObject;
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
 public class MainViewController {
 
@@ -99,13 +106,13 @@ public class MainViewController {
 
     private void setupOrgTypeComboBox() {
         orgTypeComboBox.setItems(FXCollections.observableArrayList(
-                "Công ty",
-                "Xí nghiệp",
-                "Loại hình khác"
+                "COMPANY",
+                "FACTORY",
+                "OTHER"
         ));
         // Xử lý khi chọn loại cơ quan
         orgTypeComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
-            if ("Loại hình khác".equals(newValue)) {
+            if ("OTHER".equals(newValue)) {
                 otherOrgTypeField.setVisible(true);
                 otherOrgTypeField.setManaged(true);
             } else {
@@ -128,37 +135,76 @@ public class MainViewController {
 
     private void handleLogin(String role) {
         if (validateLoginInput()) {
-            openDashboard(role);
+            String email = loginEmailField.getText();
+            String password = loginPasswordField.getText();
+            String emailregex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+            if (!email.matches(emailregex)) {
+                showError("Email không hợp lệ");
+                return;
+            }
+
+            String apiUrl;
+            if ("employer".equals(role)) {
+                apiUrl = Config.get("api.url") + "/auth/login/employer";
+            } else {
+                apiUrl = Config.get("api.url") + "/auth/login/applicant";
+            }
+
+            try {
+                JSONObject loginJson = new JSONObject();
+                loginJson.put("email", email);
+                loginJson.put("password", password);
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(apiUrl))
+                        .header("Content-Type", "application/json")
+                        .POST(HttpRequest.BodyPublishers.ofString(loginJson.toString()))
+                        .build();
+
+                HttpClient.newHttpClient().sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                        .thenAccept(response -> {
+                            if (response.statusCode() == 200) {
+                                JSONObject responseBody = new JSONObject(response.body());
+                                String token = responseBody.getString("token");
+                                try {
+                                    if ("employer".equals(role)) {
+                                        JSONObject user = responseBody.getJSONObject("user");
+                                        String userName = user.getString("fullName");
+                                        long userId = user.getLong("id");
+                                        LocalStorage.saveUserId(userId);
+                                        LocalStorage.saveUserName(userName);
+                                    } else {
+                                        String userName = responseBody.getString("userName");
+                                        LocalStorage.saveUserName(userName);
+                                    }
+                                    LocalStorage.saveToken(token);
+                                    // Mở dashboard trên JavaFX thread
+                                    javafx.application.Platform.runLater(() -> openDashboard(role));
+                                } catch (IOException e) {
+                                    javafx.application.Platform.runLater(() -> showError("Lỗi lưu thông tin đăng nhập: " + e.getMessage()));
+                                }
+                            } else {
+                                JSONObject error = new JSONObject(response.body());
+                                String message = error.has("message") ? error.getString("message") : "Đăng nhập thất bại";
+                                javafx.application.Platform.runLater(() -> showError(message));
+                            }
+                        })
+                        .exceptionally(ex -> {
+                            javafx.application.Platform.runLater(() -> showError("Lỗi kết nối: " + ex.getMessage()));
+                            return null;
+                        });
+            } catch (Exception e) {
+                showError("Lỗi: " + e.getMessage());
+            }
         }
     }
 
     private void handleRegister() {
-        if (validateRegisterInput()) {
-            String selectedRole = regRoleComboBox.getValue();
-            if (selectedRole == null) {
-                // TODO: Show error message for role selection
-                return;
-            }
-            if ("Nhà tuyển dụng".equals(selectedRole)) {
-                // Chuyển sang form bổ sung
-                switchToSupplementary();
-            } else {
-                // Người tìm việc: Hoàn tất đăng ký ngay
-                System.out.println("Registration successful for role: " + selectedRole);
-                switchToLogin();
-            }
-        }
+        showError("Chức năng đăng ký hiện chưa khả dụng. Vui lòng liên hệ quản trị viên hoặc thử lại sau!");
     }
 
     private void handleSupplementarySubmit() {
-        if (validateSupplementaryInput()) {
-            String orgType = orgTypeComboBox.getValue();
-            String otherOrgType = otherOrgTypeField.getText();
-            System.out.println("Supplementary info submitted: Org Type = " + orgType +
-                    (orgType.equals("Loại hình khác") ? ", Other Type = " + otherOrgType : ""));
-            // TODO: Implement logic to save supplementary info
-            switchToLogin();
-        }
+        showError("Chức năng đăng ký hiện chưa khả dụng. Vui lòng liên hệ quản trị viên hoặc thử lại sau!");
     }
 
     private boolean validateLoginInput() {
@@ -271,5 +317,21 @@ public class MainViewController {
             fadeIn.play();
         });
         fadeOut.play();
+    }
+
+    private void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Lỗi");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void showSuccess(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Thành công");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
