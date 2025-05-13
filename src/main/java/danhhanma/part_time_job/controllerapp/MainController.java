@@ -37,14 +37,14 @@ public class MainController implements Initializable {
             System.out.println("Đang tải các form...");
 
             // Tải form đăng nhập
-            FXMLLoader loginLoader = new FXMLLoader(getClass().getResource("/danhhanma/test02/LoginForm.fxml"));
+            FXMLLoader loginLoader = new FXMLLoader(getClass().getResource("/danhhanma/part_time_job/LoginForm.fxml"));
             loginForm = loginLoader.load();
             LoginController loginController = loginLoader.getController();
             loginController.setMainController(this);
             System.out.println("Form đăng nhập đã được tải");
 
             // Tải form đăng ký
-            FXMLLoader registrationLoader = new FXMLLoader(getClass().getResource("/danhhanma/test02/RegistrationForm.fxml"));
+            FXMLLoader registrationLoader = new FXMLLoader(getClass().getResource("/danhhanma/part_time_job/RegistrationForm.fxml"));
             registrationForm = registrationLoader.load();
             RegistrationController registrationController = registrationLoader.getController();
             registrationController.setMainController(this);
