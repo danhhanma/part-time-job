@@ -51,7 +51,7 @@ public class MainController implements Initializable {
             System.out.println("Form đăng ký đã được tải");
 
             // Tải form bảng điều khiển (Facebook.fxml)
-            FXMLLoader dashboardLoader = new FXMLLoader(getClass().getResource("/danhhanma/test02/facebook.fxml"));
+            FXMLLoader dashboardLoader = new FXMLLoader(getClass().getResource("/danhhanma/part_time_job/facebook.fxml"));
             dashboardForm = dashboardLoader.load();
             FacebookController facebookController = dashboardLoader.getController();
             facebookController.setMainController(this);
