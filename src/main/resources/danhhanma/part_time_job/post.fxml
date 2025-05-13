@@ -192,7 +192,7 @@
       </StackPane>
       <HBox maxWidth="580.0" styleClass="top-border" stylesheets="@../../css/post.css">
          <children>
-            <HBox fx:id="likeContainer" alignment="CENTER" onMouseExited="#onLikeContainerMouseExited" onMouseMoved="#onLikeContainerMouseReleased" onMousePressed="#onLikeContainerPressed" onMouseReleased="#onLikeContainerMouseReleased" spacing="10.0" styleClass="menu-item" stylesheets="@../../css/facebook.css" HBox.hgrow="ALWAYS">
+            <HBox fx:id="likeContainer" alignment="CENTER" onMouseEntered="#onLikeContainerMouseEntered" onMouseExited="#onLikeContainerMouseExited" onMouseClicked="#onLikeContainerMouseClicked" spacing="10.0" styleClass="menu-item" stylesheets="@../../css/facebook.css" HBox.hgrow="ALWAYS">
                <children>
                   <ImageView fx:id="imgReaction" fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
                      <image>

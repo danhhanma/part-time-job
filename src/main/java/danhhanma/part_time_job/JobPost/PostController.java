@@ -103,57 +103,76 @@ public class PostController implements Initializable {
     private StackPane postStats;
 
 
-    private long startTime = 0;
     private Map<Reactions, Integer> reactionCounts = new HashMap<>();
-    private Reactions currentReaction;
+    private Reactions currentReaction = Reactions.NON;
     private Post post;
     private Timeline showReactionsTimeline;
     private boolean isMouseInReactionsContainer = false;
+    private boolean isWaitingToShowReactions = false;
 
     @FXML
-    public void onLikeContainerPressed(MouseEvent me) {
-        startTime = System.currentTimeMillis();
-    }
-
-    @FXML
-    public void onLikeContainerMouseReleased(MouseEvent me) {
-        if (System.currentTimeMillis() - startTime > 500) {
+    public void onLikeContainerMouseEntered(MouseEvent me) {
+        if (!reactionsContainer.isVisible()) {
+            isWaitingToShowReactions = true;
             if (showReactionsTimeline != null) {
                 showReactionsTimeline.stop();
             }
             showReactionsTimeline = new Timeline(new KeyFrame(Duration.seconds(0.5), e -> {
-                if (!isMouseInReactionsContainer) {
+                if (isWaitingToShowReactions && !isMouseInReactionsContainer) {
                     reactionsContainer.setVisible(true);
+                    isWaitingToShowReactions = false;
                 }
             }));
             showReactionsTimeline.play();
-        } else {
-            if (reactionsContainer.isVisible()) {
-                reactionsContainer.setVisible(false);
-            }
-            if (currentReaction == Reactions.NON) {
-                setReaction(Reactions.LIKE);
-            } else {
-                setReaction(Reactions.NON);
-            }
         }
     }
 
     @FXML
     public void onLikeContainerMouseExited(MouseEvent me) {
+        isWaitingToShowReactions = false;
         if (showReactionsTimeline != null) {
             showReactionsTimeline.stop();
+        }
+        if (!isMouseInReactionsContainer) {
+            Timeline hideTimeline = new Timeline(new KeyFrame(Duration.seconds(0.2), e -> {
+                if (!isMouseInReactionsContainer && !likeContainer.isHover()) {
+                    reactionsContainer.setVisible(false);
+                }
+            }));
+            hideTimeline.play();
+        }
+    }
+
+    @FXML
+    public void onLikeContainerMouseClicked(MouseEvent me) {
+        if (reactionsContainer.isVisible()) {
+            reactionsContainer.setVisible(false);
+        }
+        if (currentReaction == Reactions.NON) {
+            setReaction(Reactions.LIKE);
+        } else {
+            setReaction(Reactions.NON);
         }
     }
 
     @FXML
     public void onReactionsContainerMouseEntered(MouseEvent me) {
         isMouseInReactionsContainer = true;
+        isWaitingToShowReactions = false;
+        if (showReactionsTimeline != null) {
+            showReactionsTimeline.stop();
+        }
     }
 
     @FXML
     public void onReactionsContainerMouseExited(MouseEvent me) {
         isMouseInReactionsContainer = false;
+        Timeline hideTimeline = new Timeline(new KeyFrame(Duration.seconds(0.2), e -> {
+            if (!isMouseInReactionsContainer && !likeContainer.isHover()) {
+                reactionsContainer.setVisible(false);
+            }
+        }));
+        hideTimeline.play();
     }
 
     @FXML
@@ -185,63 +204,44 @@ public class PostController implements Initializable {
     }
 
     public void setReaction(Reactions reaction) {
-        // Nếu đang có reaction và chọn lại reaction đó thì bỏ reaction
         if (currentReaction == reaction) {
             reaction = Reactions.NON;
         }
-
-        // Cập nhật số lượt reaction
         if (currentReaction != Reactions.NON) {
             reactionCounts.put(currentReaction, reactionCounts.getOrDefault(currentReaction, 1) - 1);
         }
         if (reaction != Reactions.NON) {
             reactionCounts.put(reaction, reactionCounts.getOrDefault(reaction, 0) + 1);
         }
-
-        // Cập nhật UI
         Image image = new Image(getClass().getResourceAsStream(reaction.getImgSrc()));
         imgReaction.setImage(image);
         reactionName.setText(reaction.getName());
         reactionName.setTextFill(Color.web(reaction.getColor()));
-
-        // Cập nhật tổng số reactions
         int totalReactions = reactionCounts.values().stream().mapToInt(Integer::intValue).sum();
         post.setTotalReactions(totalReactions);
-        
-        // Cập nhật hiển thị số reactions
         if (totalReactions > 0) {
             nbReactions.setText(String.valueOf(totalReactions));
             nbReactions.setVisible(true);
         } else {
             nbReactions.setVisible(false);
         }
-
         currentReaction = reaction;
-
-        // Cập nhật hiển thị 3 reactions phổ biến nhất
         updateTopReactions();
     }
 
     private void updateTopReactions() {
-        // Lấy 3 reactions có số lượt cao nhất
         List<Map.Entry<Reactions, Integer>> topReactions = reactionCounts.entrySet().stream()
                 .filter(entry -> entry.getValue() > 0)
                 .sorted(Map.Entry.<Reactions, Integer>comparingByValue().reversed())
                 .limit(3)
                 .collect(Collectors.toList());
-
-        // Xóa các reactions cũ
         topReactionsContainer.getChildren().clear();
-
-        // Thêm các reactions mới
         for (Map.Entry<Reactions, Integer> entry : topReactions) {
             ImageView reactionIcon = new ImageView(new Image(getClass().getResourceAsStream(entry.getKey().getImgSrc())));
             reactionIcon.setFitHeight(28);
             reactionIcon.setFitWidth(28);
             topReactionsContainer.getChildren().add(reactionIcon);
         }
-
-        // Hiển thị hoặc ẩn container và số reactions dựa trên số lượng reactions
         boolean hasReactions = !topReactions.isEmpty();
         topReactionsContainer.setVisible(hasReactions);
         nbReactions.setVisible(hasReactions);
@@ -371,7 +371,7 @@ public class PostController implements Initializable {
         topReactionsContainer.getChildren().clear();
         topReactionsContainer.setVisible(false);
         nbReactions.setVisible(false);
-        
+
         // Set default reaction UI
         Image defaultImage = new Image(getClass().getResourceAsStream(Reactions.NON.getImgSrc()));
         imgReaction.setImage(defaultImage);
