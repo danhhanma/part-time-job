@@ -148,6 +148,9 @@
                   <image>
                      <Image url="@../../img/393123651_1490098338498694_7534203730929247714_n.jpg" />
                   </image>
+                  <cursor>
+                     <Cursor fx:constant="HAND" />
+                  </cursor>
                </ImageView>
                 </HBox>
             </HBox>

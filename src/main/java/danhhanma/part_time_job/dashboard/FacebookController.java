@@ -2,6 +2,7 @@ package danhhanma.part_time_job.dashboard;
 
 
 import danhhanma.part_time_job.JobPost.PostController;
+import danhhanma.part_time_job.Utils.LocalStorage;
 import danhhanma.part_time_job.chatbox.ChatController;
 import danhhanma.part_time_job.chatbox.Message;
 import danhhanma.part_time_job.controllerapp.MainController;
@@ -170,8 +171,8 @@ public class FacebookController implements Initializable {
 
         handleResponsiveChanges(mainContainer.getWidth());
         
-        // Cập nhật tất cả các avatar
-        updateAllAvatars();
+        // Cập nhật thông tin người dùng
+        updateUserInformation();
     }
 
     private void initializeContacts() {
@@ -380,17 +381,30 @@ public class FacebookController implements Initializable {
         imageView.setClip(clip);
     }
 
-    private void updateAllAvatars() {
+    private void updateUserInformation() {
         try {
+            String userName = LocalStorage.loadUserName();
+            if (userName != null) {
+                // Cập nhật tên người dùng trong sidebar
+                VBox sidebarContent = (VBox) leftSidebar.getContent();
+                if (sidebarContent != null && !sidebarContent.getChildren().isEmpty()) {
+                    HBox firstItem = (HBox) sidebarContent.getChildren().get(0);
+                    if (firstItem != null && firstItem.getChildren().size() > 1) {
+                        Label nameLabel = (Label) firstItem.getChildren().get(1);
+                        nameLabel.setText(userName);
+                    }
+                }
+            }
+
             // Sử dụng ảnh đại diện mặc định
-            String avatarPath = "/img/393123651_1490098338498694_7534203730929247714_n.jpg";
+            String avatarPath = "/img/user.png";
             Image avatarImage = new Image(getClass().getResource(avatarPath).toString());
             
             // Cập nhật cho tất cả các avatar
             profilePicture.setImage(avatarImage);
             profilePicture2.setImage(avatarImage);
             phat.setImage(avatarImage);
-            
+
             // Áp dụng hiệu ứng tròn cho tất cả các avatar
             applyCircularClip(profilePicture);
             applyCircularClip(profilePicture2);
