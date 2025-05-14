@@ -11,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -109,6 +110,11 @@ public class PostController implements Initializable {
     private Timeline showReactionsTimeline;
     private boolean isMouseInReactionsContainer = false;
     private boolean isWaitingToShowReactions = false;
+
+    private static final int MAX_VISIBLE_LINES = 3;
+    private boolean isExpanded = false;
+    private String fullCaption;
+    private Text seeMoreText;
 
     @FXML
     public void onLikeContainerMouseEntered(MouseEvent me) {
@@ -269,25 +275,7 @@ public class PostController implements Initializable {
         audience.setImage(img);
 
         // Xử lý caption với TextFlow để hỗ trợ tiếng Việt và xuống dòng
-        captionFlow.getChildren().clear();
-        if(post.getCaption() != null && !post.getCaption().isEmpty()){
-            String[] lines = post.getCaption().split("\\r?\\n");
-            for (int i = 0; i < lines.length; i++) {
-                Text t = new Text(lines[i]);
-                t.setFont(Font.font("Segoe UI", 18));
-                t.setFill(Color.web("#1C1E21"));
-                captionFlow.getChildren().add(t);
-                if (i < lines.length - 1) {
-                    captionFlow.getChildren().add(new Text(System.lineSeparator()));
-                }
-            }
-            captionFlow.setMaxWidth(560);
-            captionFlow.setVisible(true);
-            captionFlow.setManaged(true);
-        } else {
-            captionFlow.setVisible(false);
-            captionFlow.setManaged(false);
-        }
+        setupCaption(post.getCaption());
 
         // Xử lý danh sách ảnh
         List<String> images = post.getImages();
@@ -457,6 +445,7 @@ public class PostController implements Initializable {
 
         return post;
     }
+//    Ảnh sẽ hình tròn by Danh Hanma
 
     private void applyCircularClip(ImageView imageView) {
         double width = imageView.getFitWidth();
@@ -474,6 +463,67 @@ public class PostController implements Initializable {
 
         Circle clip = new Circle(centerX, centerY, radius);
         imageView.setClip(clip);
+    }
+
+//   Tính năng xem thêm by Danh pro
+
+    private void setupCaption(String caption) {
+        captionFlow.getChildren().clear();
+        if (caption != null && !caption.isEmpty()) {
+            fullCaption = caption;
+            String[] lines = caption.split("\\r?\\n");
+
+            Text captionText = new Text();
+            captionText.getStyleClass().add("caption-text");
+
+            seeMoreText = new Text("... Xem thêm");
+            seeMoreText.getStyleClass().add("see-more-text");
+
+            seeMoreText.setOnMouseClicked(event -> toggleCaption());
+            
+            if (lines.length > MAX_VISIBLE_LINES) {
+                StringBuilder truncatedText = new StringBuilder();
+                for (int i = 0; i < MAX_VISIBLE_LINES; i++) {
+                    truncatedText.append(lines[i]).append("\n");
+                }
+                captionText.setText(truncatedText.toString());
+                captionFlow.getChildren().addAll(captionText, seeMoreText);
+            } else {
+                captionText.setText(caption);
+                captionFlow.getChildren().add(captionText);
+            }
+            
+            captionFlow.setMaxWidth(560);
+            captionFlow.setVisible(true);
+            captionFlow.setManaged(true);
+        } else {
+            captionFlow.setVisible(false);
+            captionFlow.setManaged(false);
+        }
+    }
+//    Tính năng ẩn bớt bởi Danh Hanma
+    private void toggleCaption() {
+        isExpanded = !isExpanded;
+        captionFlow.getChildren().clear();
+        
+        Text captionText = new Text();
+        captionText.getStyleClass().add("caption-text");
+        
+        if (isExpanded) {
+            captionText.setText(fullCaption);
+            Text seeLessText = new Text(" Ẩn bớt");
+            seeLessText.getStyleClass().add("see-more-text");
+            seeLessText.setOnMouseClicked(event -> toggleCaption());
+            captionFlow.getChildren().addAll(captionText, seeLessText);
+        } else {
+            String[] lines = fullCaption.split("\\r?\\n");
+            StringBuilder truncatedText = new StringBuilder();
+            for (int i = 0; i < MAX_VISIBLE_LINES; i++) {
+                truncatedText.append(lines[i]).append("\n");
+            }
+            captionText.setText(truncatedText.toString());
+            captionFlow.getChildren().addAll(captionText, seeMoreText);
+        }
     }
 
     @Override

@@ -15,7 +15,7 @@ public class MainApp extends Application {
         double appWidth = screenWidth * 4/5;
         double appHeight = screenHeight * 4/5;
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/danhhanma/part_time_job/MainView.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/danhhanma/part_time_job/facebook.fxml"));
         Parent root = loader.load();
 
         Scene scene = new Scene(root, appWidth, appHeight);

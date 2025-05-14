@@ -177,7 +177,7 @@ public class MainViewController {
                                 String token = responseBody.getString("token");
                                 try {
                                     String userName;
-                                    String avatarPath = "/img/default-avatar.png"; // Mặc định sử dụng ảnh mặc định
+                                    String avatarPath = "/img/user.png"; // Mặc định sử dụng ảnh mặc định
                                     
                                     if ("employer".equals(role)) {
                                         JSONObject user = responseBody.getJSONObject("user");

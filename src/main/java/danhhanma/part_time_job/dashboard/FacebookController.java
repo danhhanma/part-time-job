@@ -257,7 +257,6 @@ public class FacebookController implements Initializable {
     public List<Post> getPosts() {
         List<Post> ls = new ArrayList<>();
 
-        // Post 1: Test với nhiều dòng và tiếng Việt
         Post post1 = new Post();
         Account account1 = new Account();
         account1.setName("Hao Nguyen");
@@ -276,7 +275,6 @@ public class FacebookController implements Initializable {
 
         ls.add(post1);
 
-        // Post 2: Test với đoạn văn dài
         Post post2 = new Post();
         Account account2 = new Account();
         account2.setName("Nguyễn Văn Long Nhật");
@@ -295,7 +293,6 @@ public class FacebookController implements Initializable {
         post2.setNbShares(2);
         ls.add(post2);
 
-        // Post 3: Test với nhiều ảnh
         Post post3 = new Post();
         Account account3 = new Account();
         account3.setName("Nguyễn Tấn Phát");
@@ -304,7 +301,28 @@ public class FacebookController implements Initializable {
         post3.setAccount(account3);
         post3.setDate("May 10, 2025 at 12:00 AM");
         post3.setAudience(PostAudience.PUBLIC);
-        post3.setCaption("Bài viết test với nhiều ảnh\n\nMỗi ảnh sẽ được hiển thị với kích thước phù hợp\n\nVà caption sẽ được hiển thị đúng với các ký tự xuống dòng");
+        post3.setCaption(
+                "Xin chào các bạn\n" +
+                "\uD83E\uDD70\uD83E\uDD70 CẦN GẤP\n" +
+                "Quán Bún Chả cần tuyển 2 người phụ quán (rửa rau, chén, quét dọn, phụ bưng bê, dọn dẹp vệ sinh...) chưa biết sẽ được hướng dẫn\n" +
+                "➖Thời gian\n" +
+                "C1: 7h - 15h (1 bạn)\n" +
+                "C2: 15h - 22h (1 bạn)\n" +
+                "Tăng lương 3-6-9-12 tháng theo thâm niên gắn bó.\n" +
+                "Bao ăn theo ca, sắp xếp làm xoay ca theo tuần\n" +
+                "✖\uFE0F (lương sẽ trao đổi sau khi gặp ở quán)\n" +
+                "✔\uFE0FYêu cầu: Nhanh nhẹn, chịu khó, sạch sẽ, nhiệt tình công việc & thật sự có thiện chí làm công việc quán ăn \uD83E\uDE75\n" +
+                "Có thiện chí, có tính cầu tiến, thật thà, chăm chỉ, biết lắng nghe, ham học hỏi.\n" +
+                "LƯU Ý KĨ ĐỂ KHÔNG LÀM MẤT TIME ĐÔI BÊN \uD83E\uDEF6\uD83C\uDFFB\n" +
+                "\uD83D\uDCCCKHÔNG TUYỂN LÀM NGẮN HẠN\n" +
+                "\uD83D\uDCCCKHÔNG TUYỂN NGƯỜI VƯỚNG BẬN GIA ĐÌNH\n" +
+                "\uD83D\uDCCCKHÔNG BAO Ở\n" +
+                "\uD83D\uDCCCĐỌC KĨ TRƯỚC KHI ỨNG TUYỂN\n" +
+                "➖Địa chỉ: 147 Mai Đăng Chơn - Đà Nẵng\n" +
+                "SĐT trao đổi: 0782.534.885 (Tài) / 0782.534.885 (Bún chả quạt)\n" +
+                "Hoặc gặp trực tiếp tại quán:\n" +
+                "Bún chả quạt & Nem nướng Nha Trang - 147 Mai Đăng Chơn\n" +
+                "\uD83C\uDF40Trân quý gặp được người có thiện chí sớm ạ");
         post3.setImages(Arrays.asList(
                 "/img/cc.jpg",
                 "/img/cc.jpg",
