@@ -4,14 +4,14 @@ import java.time.LocalDateTime;
 
 public class Message {
     public enum Type {
-        TEXT, IMAGE, VIDEO, FILE, FOLDER, EMOJI
+        TEXT, IMAGE, VIDEO, FILE, FOLDER, EMOJI, LINK
     }
 
     private String content;
     private boolean isSent;
     private LocalDateTime timestamp;
     private Type type;
-    private String fileName; // Dùng cho file/folder
+    private String fileName;
 
     public Message(String content, boolean isSent) {
         this(content, isSent, Type.TEXT, null);
@@ -44,4 +44,4 @@ public class Message {
     public String getFileName() {
         return fileName;
     }
-} 
+}

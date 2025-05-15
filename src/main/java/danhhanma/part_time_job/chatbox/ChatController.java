@@ -2,14 +2,12 @@ package danhhanma.part_time_job.chatbox;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.TranslateTransition;
+import javafx.application.HostServices;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -27,6 +25,7 @@ import java.nio.file.StandardCopyOption;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class ChatController {
 
@@ -49,12 +48,6 @@ public class ChatController {
     private TextField messageInput;
 
     @FXML
-    private Button closeButton;
-
-    @FXML
-    private Button minimizeButton;
-
-    @FXML
     private VBox chatBox;
 
     @FXML
@@ -66,16 +59,16 @@ public class ChatController {
     @FXML
     private Button folderButton;
 
-    @FXML
-    private Button emojiButton;
-
-    private boolean isMinimized = false;
-    private double originalHeight;
     private Runnable onClose;
     private List<Message> messageHistory;
+    private HostServices hostServices; // Thêm để mở link
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
     private static final String CHAT_FILES_DIR = "chat_files";
+    private static final Pattern URL_PATTERN = Pattern.compile(
+            "^(https?://)?([\\w-]+\\.)+[\\w-]+(/[\\w-./?%&=]*)?$",
+            Pattern.CASE_INSENSITIVE
+    );
 
     public ChatController() {
         this.messageHistory = new ArrayList<>();
@@ -91,7 +84,7 @@ public class ChatController {
             contactAvatar.setImage(image);
             applyCircularClip(contactAvatar);
         } catch (Exception e) {
-            contactAvatar.setImage(new Image(getClass().getResource("/img/default-avatar.png").toString()));
+            contactAvatar.setImage(new Image(getClass().getResource("/img/user.png").toString()));
             applyCircularClip(contactAvatar);
         }
     }
@@ -104,32 +97,18 @@ public class ChatController {
         this.onClose = onClose;
     }
 
+    public void setHostServices(HostServices hostServices) {
+        this.hostServices = hostServices;
+    }
+
     public void addMessage(String message, boolean isSent) {
-        // Tạo và lưu tin nhắn mới vào lịch sử
-        Message newMessage = new Message(message, isSent);
+        // Kiểm tra xem tin nhắn có phải là URL không
+        Message.Type type = isValidUrl(message) ? Message.Type.LINK : Message.Type.TEXT;
+        Message newMessage = new Message(message, isSent, type, null);
         messageHistory.add(newMessage);
 
         // Hiển thị tin nhắn
-        VBox messageWrapper = new VBox(2);
-        messageWrapper.setAlignment(isSent ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT);
-
-        HBox messageBox = new HBox();
-        messageBox.setAlignment(isSent ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT);
-
-        Label messageLabel = new Label(message);
-        messageLabel.getStyleClass().add(isSent ? "message-bubble-me" : "message-bubble-other");
-        messageLabel.setWrapText(true);
-        messageLabel.setMaxWidth(240);
-
-        Label timestampLabel = new Label(newMessage.getTimestamp().format(TIME_FORMATTER));
-        timestampLabel.getStyleClass().add("message-timestamp");
-        timestampLabel.setAlignment(isSent ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT);
-
-        messageBox.getChildren().add(messageLabel);
-        messageWrapper.getChildren().addAll(messageBox, timestampLabel);
-        messageContainer.getChildren().add(messageWrapper);
-
-        applyMessageAnimation(messageWrapper, isSent);
+        showMessage(newMessage);
         messageArea.setVvalue(1.0);
     }
 
@@ -162,6 +141,10 @@ public class ChatController {
         slide.play();
     }
 
+    private boolean isValidUrl(String text) {
+        return URL_PATTERN.matcher(text).matches();
+    }
+
     @FXML
     private void closeChat() {
         if (onClose != null) {
@@ -180,7 +163,7 @@ public class ChatController {
                 try {
                     Thread.sleep(1000);
                     javafx.application.Platform.runLater(() -> {
-                        addMessage("Đây là tin nhắn phản hồi tự động", false);
+                        addMessage("Oke", false);
                     });
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -196,8 +179,6 @@ public class ChatController {
                 sendMessage();
             }
         });
-
-        addMessage("Xin chào! Tôi có thể giúp gì cho bạn?", false);
     }
 
     public void applyCircularClip(ImageView imageView) {
@@ -223,7 +204,7 @@ public class ChatController {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Chọn ảnh để gửi");
         fileChooser.getExtensionFilters().addAll(
-            new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif")
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif")
         );
         Window window = chatBox.getScene().getWindow();
         File file = fileChooser.showOpenDialog(window);
@@ -248,8 +229,8 @@ public class ChatController {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Chọn file để gửi");
         fileChooser.getExtensionFilters().addAll(
-            new FileChooser.ExtensionFilter("Tài liệu", "*.pdf", "*.doc", "*.docx", "*.xls", "*.xlsx", "*.txt", "*.ppt", "*.pptx","*.mp4"),
-            new FileChooser.ExtensionFilter("Tất cả các file", "*.*")
+                new FileChooser.ExtensionFilter("Tài liệu", "*.pdf", "*.doc", "*.docx", "*.xls", "*.xlsx", "*.txt", "*.ppt", "*.pptx","*.mp4"),
+                new FileChooser.ExtensionFilter("Tất cả các file", "*.*")
         );
         Window window = chatBox.getScene().getWindow();
         File file = fileChooser.showOpenDialog(window);
@@ -339,7 +320,6 @@ public class ChatController {
         messageWrapper.setAlignment(message.isSent() ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT);
         HBox messageBox = new HBox();
         messageBox.setAlignment(message.isSent() ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT);
-        Label messageLabel;
         switch (message.getType()) {
             case IMAGE:
                 ImageView imgView = new ImageView(new File(message.getContent()).toURI().toString());
@@ -354,20 +334,20 @@ public class ChatController {
                 HBox folderCard = new HBox(14);
                 folderCard.setAlignment(Pos.CENTER_LEFT);
                 folderCard.setStyle(
-                    "-fx-background-color: #f7fafd;" +
-                    "-fx-border-radius: 10;" +
-                    "-fx-background-radius: 10;" +
-                    "-fx-padding: 12;" +
-                    "-fx-border-color: #e0e0e0;" +
-                    "-fx-border-width: 1;" +
-                    "-fx-effect: dropshadow(gaussian, #e0e0e0, 4, 0.2, 0, 2);" +
-                    "-fx-cursor: hand;"
+                        "-fx-background-color: #f7fafd;" +
+                                "-fx-border-radius: 10;" +
+                                "-fx-background-radius: 10;" +
+                                "-fx-padding: 12;" +
+                                "-fx-border-color: #e0e0e0;" +
+                                "-fx-border-width: 1;" +
+                                "-fx-effect: dropshadow(gaussian, #e0e0e0, 4, 0.2, 0, 2);" +
+                                "-fx-cursor: hand;"
                 );
                 folderCard.setMaxWidth(220);
                 URL folderIconUrl = getClass().getResource("/img/folder.png");
                 ImageView folderIcon = folderIconUrl != null
-                    ? new ImageView(new Image(folderIconUrl.toString()))
-                    : new ImageView();
+                        ? new ImageView(new Image(folderIconUrl.toString()))
+                        : new ImageView();
                 folderIcon.setFitHeight(40);
                 folderIcon.setFitWidth(40);
                 VBox infoBox = new VBox(2);
@@ -388,8 +368,8 @@ public class ChatController {
                 infoBox.getChildren().addAll(folderName, sizeLabel, statusBox);
                 URL downloadIconUrl = getClass().getResource("/img/download.png");
                 ImageView downloadIcon = downloadIconUrl != null
-                    ? new ImageView(new Image(downloadIconUrl.toString(), 24, 24, true, true))
-                    : new ImageView();
+                        ? new ImageView(new Image(downloadIconUrl.toString(), 24, 24, true, true))
+                        : new ImageView();
                 Button downloadBtn = new Button();
                 downloadBtn.setGraphic(downloadIcon);
                 downloadBtn.setStyle("-fx-background-color: transparent; -fx-cursor: hand;");
@@ -406,20 +386,20 @@ public class ChatController {
                 HBox fileCard = new HBox(14);
                 fileCard.setAlignment(Pos.CENTER_LEFT);
                 fileCard.setStyle(
-                    "-fx-background-color: #f7fafd;" +
-                    "-fx-border-radius: 10;" +
-                    "-fx-background-radius: 10;" +
-                    "-fx-padding: 12;" +
-                    "-fx-border-color: #e0e0e0;" +
-                    "-fx-border-width: 1;" +
-                    "-fx-effect: dropshadow(gaussian, #e0e0e0, 4, 0.2, 0, 2);" +
-                    "-fx-cursor: hand;"
+                        "-fx-background-color: #f7fafd;" +
+                                "-fx-border-radius: 10;" +
+                                "-fx-background-radius: 10;" +
+                                "-fx-padding: 12;" +
+                                "-fx-border-color: #e0e0e0;" +
+                                "-fx-border-width: 1;" +
+                                "-fx-effect: dropshadow(gaussian, #e0e0e0, 4, 0.2, 0, 2);" +
+                                "-fx-cursor: hand;"
                 );
                 fileCard.setMaxWidth(220);
                 URL fileIconUrl = getClass().getResource("/img/file.png");
                 ImageView fileIcon = fileIconUrl != null
-                    ? new ImageView(new Image(fileIconUrl.toString()))
-                    : new ImageView();
+                        ? new ImageView(new Image(fileIconUrl.toString()))
+                        : new ImageView();
                 fileIcon.setFitHeight(40);
                 fileIcon.setFitWidth(40);
                 VBox infoBox2 = new VBox(2);
@@ -436,24 +416,29 @@ public class ChatController {
                 Label fileStatus = new Label(file.exists() ? "Đã có trên máy" : "Chưa tải");
                 fileStatus.setStyle("-fx-text-fill: #4caf50; -fx-font-size: 12;");
                 statusBox2.getChildren().add(fileStatus);
-                infoBox2.getChildren().addAll(fileName, fileSize, statusBox2);
-                URL downloadIconUrl2 = getClass().getResource("/img/download.png");
-                ImageView downloadIcon2 = downloadIconUrl2 != null
-                    ? new ImageView(new Image(downloadIconUrl2.toString(), 24, 24, true, true))
-                    : new ImageView();
-                Button downloadBtn2 = new Button();
-                downloadBtn2.setGraphic(downloadIcon2);
-                downloadBtn2.setStyle("-fx-background-color: transparent; -fx-cursor: hand;");
-                downloadBtn2.setOnAction(e -> saveFileToDisk(file));
-                downloadBtn2.setOnMouseEntered(e -> downloadBtn2.setStyle("-fx-background-color: #e3f2fd; -fx-cursor: hand;"));
-                downloadBtn2.setOnMouseExited(e -> downloadBtn2.setStyle("-fx-background-color: transparent; -fx-cursor: hand;"));
-                fileCard.getChildren().addAll(fileIcon, infoBox2, downloadBtn2);
-                fileCard.setOnMouseClicked(e -> saveFileToDisk(file));
                 HBox.setMargin(fileCard, new Insets(0, message.isSent() ? 0 : 60, 0, message.isSent() ? 60 : 0));
                 messageBox.getChildren().add(fileCard);
                 break;
+            case LINK:
+                Hyperlink link = new Hyperlink(message.getContent());
+                link.getStyleClass().add(message.isSent() ? "message-bubble-me" : "message-bubble-other");
+                link.setWrapText(true);
+                link.setMaxWidth(240);
+                link.setOnAction(e -> {
+                    if (hostServices != null) {
+                        String url = message.getContent();
+                        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                            url = "https://" + url;
+                        }
+                        hostServices.showDocument(url);
+                    } else {
+                        System.err.println("HostServices not initialized!");
+                    }
+                });
+                messageBox.getChildren().add(link);
+                break;
             default:
-                messageLabel = new Label(message.getContent());
+                Label messageLabel = new Label(message.getContent());
                 messageLabel.getStyleClass().add(message.isSent() ? "message-bubble-me" : "message-bubble-other");
                 messageLabel.setWrapText(true);
                 messageLabel.setMaxWidth(240);
@@ -479,7 +464,7 @@ public class ChatController {
         root.setStyle("-fx-background-color: #222;");
         Scene scene = new Scene(root, 700, 700);
         popup.setScene(scene);
-        popup.setTitle("Xem ảnh lớn");
+        popup.setTitle("Image");
         popup.showAndWait();
     }
 

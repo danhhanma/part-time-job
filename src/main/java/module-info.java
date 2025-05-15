@@ -8,6 +8,7 @@ module danhhanma.part_time_job {
     requires com.fasterxml.jackson.datatype.jsr310;
     requires com.fasterxml.jackson.databind;
     requires org.apache.commons.io;
+    requires java.desktop;
 
 
     opens danhhanma.part_time_job to javafx.fxml;

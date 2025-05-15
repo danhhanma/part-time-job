@@ -333,14 +333,42 @@
 }
 
 .circle-button {
-  -fx-background-color: #0F7B3E;
+  -fx-background-color: #0f7b3e;
   -fx-background-radius: 50%;
   -fx-border-radius: 50%;
   -fx-padding: 10;
   -fx-cursor: hand;
-  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 2, 0.0, 0, 1);
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 2, 0, 0, 1);
 }
 
 .circle-button:hover {
   -fx-background-color: #4e4f50;
+}
+
+
+/* Style cho Hyperlink */
+.message-bubble-me.hyperlink {
+  -fx-background-color: #0084ff;
+  -fx-text-fill: white;
+  -fx-underline: true;
+  -fx-border-width: 0;
+  -fx-padding: 8 12;
+  -fx-background-radius: 15;
+  -fx-cursor: hand;
+  -fx-font-size: 14px;
+}
+
+.message-bubble-other.hyperlink {
+  -fx-background-color: #e4e6eb;
+  -fx-text-fill: #0066cc;
+  -fx-underline: true;
+  -fx-border-width: 0;
+  -fx-padding: 8 12;
+  -fx-background-radius: 15;
+  -fx-cursor: hand;
+  -fx-font-size: 14px;
+}
+
+.hyperlink:hover {
+  -fx-opacity: 0.9;
 }

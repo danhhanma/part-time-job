@@ -211,6 +211,7 @@ public class FacebookController implements Initializable {
             chatController.setChatTitle(selectedContact.getName());
             chatController.setContactAvatar(selectedContact.getAvatarPath());
             chatController.setStatus(selectedContact.getStatus());
+            chatController.setHostServices(danhhanma.part_time_job.application.MainApp.getHostServicesInstance());
 
             // Load lịch sử chat nếu có
             List<Message> history = chatHistories.getOrDefault(contactName, new ArrayList<>());
