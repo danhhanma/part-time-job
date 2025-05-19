@@ -468,20 +468,6 @@ public class ChatController {
         popup.showAndWait();
     }
 
-    private void saveFileToDisk(File file) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Lưu file về máy");
-        fileChooser.setInitialFileName(file.getName());
-        File dest = fileChooser.showSaveDialog(chatBox.getScene().getWindow());
-        if (dest != null) {
-            try {
-                FileUtils.copyFile(file, dest);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
-
     private void saveFolderToDisk(File folder) {
         DirectoryChooser dirChooser = new DirectoryChooser();
         dirChooser.setTitle("Chọn nơi lưu thư mục");
