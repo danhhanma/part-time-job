@@ -5,7 +5,6 @@ import danhhanma.part_time_job.JobPost.PostController;
 import danhhanma.part_time_job.Utils.LocalStorage;
 import danhhanma.part_time_job.chatbox.ChatController;
 import danhhanma.part_time_job.chatbox.Message;
-import danhhanma.part_time_job.controllerapp.MainController;
 import danhhanma.part_time_job.objects.contact.Contact;
 import danhhanma.part_time_job.objects.post.Account;
 import danhhanma.part_time_job.objects.post.Post;
@@ -65,8 +64,6 @@ public class FacebookController implements Initializable {
 
     List<Post> posts;
 
-    private MainController mainController;
-
     // Danh sách người liên hệ động
     private List<Contact> contacts;
 
@@ -76,10 +73,6 @@ public class FacebookController implements Initializable {
     // Map để lưu trữ lịch sử chat cho mỗi người liên hệ
     private final Map<String, List<Message>> chatHistories = new HashMap<>();
 
-    public void setMainController(MainController mainController) {
-        this.mainController = mainController;
-        System.out.println("MainController đã được thiết lập trong FacebookController");
-    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {

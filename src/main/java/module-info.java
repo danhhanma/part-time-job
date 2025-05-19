@@ -12,10 +12,6 @@ module danhhanma.part_time_job {
 
 
     opens danhhanma.part_time_job to javafx.fxml;
-    exports danhhanma.part_time_job.login;
-    opens danhhanma.part_time_job.login to javafx.fxml;
-    exports danhhanma.part_time_job.register;
-    opens danhhanma.part_time_job.register to javafx.fxml;
     exports danhhanma.part_time_job.dashboard;
     opens danhhanma.part_time_job.dashboard to javafx.fxml;
     exports danhhanma.part_time_job.controllerapp;
