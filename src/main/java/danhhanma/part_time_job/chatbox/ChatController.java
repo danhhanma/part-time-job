@@ -1,8 +1,11 @@
 package danhhanma.part_time_job.chatbox;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import danhhanma.part_time_job.Utils.LocalStorage;
 import javafx.animation.FadeTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.HostServices;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -18,6 +21,8 @@ import javafx.stage.*;
 import javafx.util.Duration;
 import org.apache.commons.io.FileUtils;
 
+import java.io.IOException;
+import java.util.Base64;
 import java.io.File;
 import java.net.URL;
 import java.nio.file.Files;
@@ -25,7 +30,10 @@ import java.nio.file.StandardCopyOption;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
+
+import static danhhanma.part_time_job.chatbox.Message.Type.TEXT;
 
 public class ChatController {
 
@@ -58,9 +66,10 @@ public class ChatController {
 
     @FXML
     private Button folderButton;
-
+    private ChatService chatService;
+    private String opponentId;
     private Runnable onClose;
-    private List<Message> messageHistory;
+    private long userID= LocalStorage.loadUserId();
     private HostServices hostServices; // Thêm để mở link
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
@@ -70,8 +79,27 @@ public class ChatController {
             Pattern.CASE_INSENSITIVE
     );
 
-    public ChatController() {
-        this.messageHistory = new ArrayList<>();
+    public ChatController() throws IOException {
+    }
+
+    public void setOpponentId(String opponentId) {
+        System.out.println("Setting opponent ID: " + opponentId);
+        this.opponentId = opponentId;
+    }
+
+    public void setChatService(ChatService chatService) {
+        this.chatService = chatService;
+        this.chatService.setOnMessageReceived((type,sender, content)-> Platform.runLater(() -> {
+            if (type.equals("Text")&&sender.equals(this.opponentId)&&!content.isEmpty()&&isValidUrl(content)) {
+                addMessageWithType(content, false, Message.Type.LINK, null);
+            }
+            else if(type.equals("Image")&&content!=null&&sender.equals(opponentId)){
+                addMessageWithType(null, false, Message.Type.IMAGE, content);
+            }
+            else if(!type.equals("Users")){
+                receiveMessage(content);
+            }
+        }));
     }
 
     public void setChatTitle(String title) {
@@ -103,30 +131,34 @@ public class ChatController {
 
     public void addMessage(String message, boolean isSent) {
         // Kiểm tra xem tin nhắn có phải là URL không
-        Message.Type type = isValidUrl(message) ? Message.Type.LINK : Message.Type.TEXT;
+        Message.Type type = isValidUrl(message) ? Message.Type.LINK : TEXT;
         Message newMessage = new Message(message, isSent, type, null);
-        messageHistory.add(newMessage);
 
-        // Hiển thị tin nhắn
         showMessage(newMessage);
         messageArea.setVvalue(1.0);
     }
 
     // Phương thức để load lại lịch sử tin nhắn
-    public void loadMessageHistory(List<Message> history) {
-        messageHistory.clear();
-        messageHistory.addAll(history);
+    public void loadMessageHistory() throws Exception {
+        List<MessageDTO> messageDTOs = MessageDTO.FetchMessages(userID, Long.parseLong(opponentId), 0);
         messageContainer.getChildren().clear();
-        for (Message message : messageHistory) {
-            showMessage(message);
+        messageDTOs.sort( (m1, m2) -> m1.getTimestamp().compareTo(m2.getTimestamp()));
+        for (MessageDTO message : messageDTOs) {
+            Message mess= new Message(
+                    message.getContent(),
+                    message.isSent(),
+                    Message.Type.valueOf(message.getType().toUpperCase()),
+                    message.getFileUrl()
+            );
+            if(mess.getType() == Message.Type.TEXT && isValidUrl(mess.getContent())) {
+                mess.setType("LINK");
+            }
+            showMessage(mess);
         }
         messageArea.setVvalue(1.0);
     }
 
-    // Getter cho lịch sử tin nhắn
-    public List<Message> getMessageHistory() {
-        return new ArrayList<>(messageHistory);
-    }
+
 
     private void applyMessageAnimation(VBox messageWrapper, boolean isSent) {
         FadeTransition fade = new FadeTransition(Duration.millis(300), messageWrapper);
@@ -153,30 +185,27 @@ public class ChatController {
     }
 
     @FXML
-    private void sendMessage() {
+    private void sendMessage() throws JsonProcessingException {
         String message = messageInput.getText().trim();
         if (!message.isEmpty()) {
             addMessage(message, true);
+            chatService.sendMessage(Long.parseLong((opponentId)), message);
             messageInput.clear();
-
-            new Thread(() -> {
-                try {
-                    Thread.sleep(1000);
-                    javafx.application.Platform.runLater(() -> {
-                        addMessage("Oke", false);
-                    });
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }).start();
         }
     }
-
+    @FXML
+    private void receiveMessage(String message){
+        addMessage(message, false);
+    }
     @FXML
     public void initialize() {
         messageInput.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) {
-                sendMessage();
+                try {
+                    sendMessage();
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
     }
@@ -200,7 +229,7 @@ public class ChatController {
     }
 
     @FXML
-    private void sendImage() {
+    private void sendImage() throws IOException {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Chọn ảnh để gửi");
         fileChooser.getExtensionFilters().addAll(
@@ -209,18 +238,13 @@ public class ChatController {
         Window window = chatBox.getScene().getWindow();
         File file = fileChooser.showOpenDialog(window);
         if (file != null) {
+            byte[] fileContent = Files.readAllBytes(file.toPath());
+            String base64String = Base64.getEncoder().encodeToString(fileContent);
+            String mimeType = Files.probeContentType(file.toPath());
+            String dataUrl = "data:" + mimeType + ";base64," + base64String;
+            chatService.sendImage(Long.parseLong(this.opponentId),dataUrl);
             addMessageWithType(file.getAbsolutePath(), true, Message.Type.IMAGE, file.getName());
-            // Bot phản hồi lại
-            new Thread(() -> {
-                try {
-                    Thread.sleep(1000);
-                    javafx.application.Platform.runLater(() -> {
-                        addMessageWithType("Tôi đã nhận được ảnh của bạn!", false, Message.Type.TEXT, null);
-                    });
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }).start();
+
         }
     }
 
@@ -246,7 +270,7 @@ public class ChatController {
                     try {
                         Thread.sleep(1000);
                         javafx.application.Platform.runLater(() -> {
-                            addMessageWithType("Tôi đã nhận được file của bạn!", false, Message.Type.TEXT, null);
+                            addMessageWithType("Tôi đã nhận được file của bạn!", false, TEXT, null);
                         });
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -271,17 +295,7 @@ public class ChatController {
                 File dest = new File(chatFilesDir, System.currentTimeMillis() + "_" + folder.getName());
                 org.apache.commons.io.FileUtils.copyDirectory(folder, dest);
                 addMessageWithType(dest.getAbsolutePath(), true, Message.Type.FOLDER, dest.getName());
-                // Bot phản hồi lại
-                new Thread(() -> {
-                    try {
-                        Thread.sleep(1000);
-                        javafx.application.Platform.runLater(() -> {
-                            addMessageWithType("Tôi đã nhận được thư mục của bạn!", false, Message.Type.TEXT, null);
-                        });
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }).start();
+
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -290,22 +304,9 @@ public class ChatController {
 
     private void addMessageWithType(String content, boolean isSent, Message.Type type, String fileName) {
         Message newMessage = new Message(content, isSent, type, fileName);
-        messageHistory.add(newMessage);
         showMessage(newMessage);
         messageArea.setVvalue(1.0);
-        // Nếu là video thì bot cũng phản hồi lại
-        if (isSent && type == Message.Type.VIDEO) {
-            new Thread(() -> {
-                try {
-                    Thread.sleep(1000);
-                    javafx.application.Platform.runLater(() -> {
-                        addMessageWithType("Tôi đã nhận được video của bạn!", false, Message.Type.TEXT, null);
-                    });
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }).start();
-        }
+
     }
 
     private String readableFileSize(long size) {
@@ -322,11 +323,13 @@ public class ChatController {
         messageBox.setAlignment(message.isSent() ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT);
         switch (message.getType()) {
             case IMAGE:
-                ImageView imgView = new ImageView(new File(message.getContent()).toURI().toString());
+                ImageView imgView;
+                if(message.getFileName().contains("https://"))imgView= new ImageView(new Image(message.getFileName()));
+                else imgView = new ImageView(new Image(new File(message.getFileName()).toURI().toString()));
                 imgView.setFitWidth(120);
                 imgView.setPreserveRatio(true);
                 imgView.setStyle("-fx-cursor: hand;");
-                imgView.setOnMouseClicked(e -> showImagePopup(message.getContent()));
+                imgView.setOnMouseClicked(e -> showImagePopup(message.getFileName()));
                 messageBox.getChildren().add(imgView);
                 break;
             case FOLDER:

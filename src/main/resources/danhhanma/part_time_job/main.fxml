@@ -49,6 +49,7 @@
                             <Text styleClass="form-header" text="Đăng ký" />
                             <TextField fx:id="regNameField" promptText="Họ và tên" styleClass="input-field" />
                             <TextField fx:id="regEmailField" promptText="Email Address" styleClass="input-field" />
+                            <ComboBox fx:id="regGenderComboBox" promptText="Giới tính" styleClass="input-field"/>
                             <ComboBox fx:id="regRoleComboBox" promptText="Chọn vai trò" styleClass="input-field" />
                             <PasswordField fx:id="regPasswordField" promptText="Password" styleClass="input-field" />
                             <PasswordField fx:id="regConfirmPasswordField" promptText="Xác nhận Password" styleClass="input-field" />

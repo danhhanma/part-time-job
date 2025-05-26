@@ -18,7 +18,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="danhhanma.part_time_job.dashboard.FacebookController">
+<StackPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="danhhanma.part_time_job.dashboard.EmployerController">
     <BorderPane fx:id="mainContainer" prefWidth="1200.0" stylesheets="@../../css/facebook.css">
 
         <!-- Thanh điều hướng trên cùng -->
@@ -171,7 +171,7 @@
                         </padding>
       
                         <HBox alignment="CENTER_LEFT" focusTraversable="true" prefHeight="86.0" prefWidth="582.0" spacing="10">
-                            <ImageView fx:id="phat" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" style="-fx-cursor: hand;" styleClass="circular-avatar">
+                            <ImageView fx:id="profilePicture3" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" style="-fx-cursor: hand;" styleClass="circular-avatar">
                                 <image>
                                     <Image url="@../../img/393123651_1490098338498694_7534203730929247714_n.jpg" />
                                 </image>
@@ -256,7 +256,7 @@
                                     <Image url="@../../img/393123651_1490098338498694_7534203730929247714_n.jpg" />
                                 </image>
                             </ImageView>
-                            <Label style="-fx-font-weight: bold;" text="Phat Nguyen" />
+                            <Label style="-fx-font-weight: bold;" fx:id="userName" />
                         </HBox>
                         <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-cursor: hand;" styleClass="menu-item" stylesheets="@../../css/facebook.css">
                             <children>

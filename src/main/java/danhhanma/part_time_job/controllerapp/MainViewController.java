@@ -2,9 +2,11 @@ package danhhanma.part_time_job.controllerapp;
 
 import danhhanma.part_time_job.Utils.Config;
 import danhhanma.part_time_job.Utils.LocalStorage;
-import danhhanma.part_time_job.application.FacebookView;
-import danhhanma.part_time_job.dashboard.FacebookController;
+import danhhanma.part_time_job.application.ApplicantView;
+import danhhanma.part_time_job.application.EmployerView;
+import danhhanma.part_time_job.dashboard.ApplicantController;
 import javafx.animation.FadeTransition;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -51,6 +53,9 @@ public class MainViewController {
 
     @FXML
     private ComboBox<String> regRoleComboBox;
+    @FXML
+    private ComboBox<String> regGenderComboBox;
+
 
     @FXML
     private ComboBox<String> orgTypeComboBox;
@@ -88,6 +93,7 @@ public class MainViewController {
     // Biến tạm lưu thông tin đăng ký nhà tuyển dụng
     private String tempRegName;
     private String tempRegEmail;
+    private String tempGender;
     private String tempRegPassword;
     private String tempRegRetypePass;
 
@@ -101,6 +107,7 @@ public class MainViewController {
         supplementaryForm.setVisible(false);
         supplementaryForm.setManaged(false);
         setupRoleComboBox();
+        setUpGenderComboBox();
         setupOrgTypeComboBox();
         setupButtonActions();
     }
@@ -111,7 +118,13 @@ public class MainViewController {
                 "Nhà tuyển dụng"
         ));
     }
-
+    private void setUpGenderComboBox() {
+        regGenderComboBox.setItems(FXCollections.observableArrayList(
+                "Nam",
+                "Nữ",
+                "không muốn tiết lộ!"
+        ));
+    }
     private void setupOrgTypeComboBox() {
         orgTypeComboBox.setItems(FXCollections.observableArrayList(
                 "Company","Shop","Restaurant","Supermarket","Hotel",
@@ -174,15 +187,19 @@ public class MainViewController {
                         .thenAccept(response -> {
                             if (response.statusCode() == 200) {
                                 JSONObject responseBody = new JSONObject(response.body());
+
                                 String token = responseBody.getString("token");
                                 try {
                                     String userName;
                                     String avatarPath = "/img/user.png"; // Mặc định sử dụng ảnh mặc định
-                                    
+                                    JSONObject user = responseBody.getJSONObject("user");
                                     if ("employer".equals(role)) {
-                                        JSONObject user = responseBody.getJSONObject("user");
+                                        LocalStorage.clearAll();
+                                        JSONObject employer = responseBody.getJSONObject("employer");
                                         userName = user.getString("fullName");
                                         long userId = user.getLong("id");
+                                        String employerId = employer.getString("id");
+                                        LocalStorage.saveEmployerId(employerId);
                                         LocalStorage.saveUserId(userId);
                                         LocalStorage.saveUserName(userName);
                                         
@@ -191,24 +208,43 @@ public class MainViewController {
                                             avatarPath = user.getString("avatar");
                                         }
                                     } else {
-                                        userName = responseBody.getString("userName");
+                                        LocalStorage.clearAll();
+                                        JSONObject applicant = responseBody.getJSONObject("applicant");
+                                        userName = user.getString("fullName");
+                                        long userId = user.getLong("id");
+                                        String applicantId = applicant.getString("id");
+                                        LocalStorage.saveApplicantId(applicantId);
+                                        LocalStorage.saveUserId(userId);
                                         LocalStorage.saveUserName(userName);
-                                        
+
                                         // Nếu có avatar trong response, sử dụng nó
-                                        if (responseBody.has("avatar")) {
-                                            avatarPath = responseBody.getString("avatar");
+                                        if (user.has("avatar")) {
+                                            avatarPath = user.getString("avatar");
                                         }
                                     }
-                                    
+                                    LocalStorage.saveAvatarPath(avatarPath);
                                     LocalStorage.saveToken(token);
                                     
                                     // Mở dashboard trên JavaFX thread
-                                    javafx.application.Platform.runLater(() -> {
+                                    if("applicant".equals(role))Platform.runLater(() -> {
                                         try {
                                             Stage currentStage = (Stage) rootPane.getScene().getWindow();
                                             currentStage.close();
 
-                                            FacebookView dashboard = new FacebookView();
+                                            ApplicantView dashboard = new ApplicantView();
+                                            Stage dashboardStage = new Stage();
+                                            dashboard.start(dashboardStage);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                            showError("Lỗi mở dashboard: " + e.getMessage());
+                                        }
+                                    });
+                                    else Platform.runLater(() -> {
+                                        try {
+                                            Stage currentStage = (Stage) rootPane.getScene().getWindow();
+                                            currentStage.close();
+
+                                            EmployerView dashboard = new EmployerView();
                                             Stage dashboardStage = new Stage();
                                             dashboard.start(dashboardStage);
                                         } catch (Exception e) {
@@ -217,12 +253,12 @@ public class MainViewController {
                                         }
                                     });
                                 } catch (IOException e) {
-                                    javafx.application.Platform.runLater(() -> showError("Lỗi lưu thông tin đăng nhập: " + e.getMessage()));
+                                    Platform.runLater(() -> showError("Lỗi lưu thông tin đăng nhập: " + e.getMessage()));
                                 }
                             } else {
                                 JSONObject error = new JSONObject(response.body());
                                 String message = error.has("message") ? error.getString("message") : "Đăng nhập thất bại";
-                                javafx.application.Platform.runLater(() -> showError(message));
+                                Platform.runLater(() -> showError(message));
                             }
                         })
                         .exceptionally(ex -> {
@@ -235,9 +271,9 @@ public class MainViewController {
         }
     }
 
-    private FacebookController getFacebookController() {
+    private ApplicantController getFacebookController() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/danhhanma/part_time_job/facebook.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/danhhanma/part_time_job/ApplicantView.fxml"));
             loader.load();
             return loader.getController();
         } catch (IOException e) {
@@ -258,6 +294,7 @@ public class MainViewController {
             tempRegName = regNameField.getText();
             tempRegEmail = regEmailField.getText();
             tempRegPassword = regPasswordField.getText();
+            tempGender = regGenderComboBox.getValue();
             tempRegRetypePass = regConfirmPasswordField.getText();
 
             // Validate email format
@@ -276,8 +313,47 @@ public class MainViewController {
             // Chuyển sang form bổ sung
             switchToSupplementary();
         } else {
-            // Xử lý đăng ký người tìm việc (chưa có API)
-            showError("Chức năng đăng ký người tìm việc đang được phát triển. Vui lòng thử lại sau!");
+            tempRegName = regNameField.getText();
+            tempRegEmail = regEmailField.getText();
+            tempGender = regGenderComboBox.getValue();
+            tempRegPassword = regPasswordField.getText();
+            tempRegRetypePass = regConfirmPasswordField.getText();
+            try {
+                JSONObject registerJson = new JSONObject();
+                registerJson.put("name", tempRegName);
+                registerJson.put("email", tempRegEmail);
+                registerJson.put("gender", tempGender);
+                registerJson.put("password", tempRegPassword);
+                registerJson.put("retypePass", tempRegRetypePass);
+
+                String apiUrl = Config.get("api.url") + "/auth/register/applicant";
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(apiUrl))
+                        .header("Content-Type", "application/json")
+                        .POST(HttpRequest.BodyPublishers.ofString(registerJson.toString()))
+                        .build();
+
+                HttpClient.newHttpClient().sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                        .thenAccept(response -> {
+                            if (response.statusCode() == 200) {
+                                javafx.application.Platform.runLater(() -> {
+                                    showSuccess("Đăng ký thành công! Vui lòng đăng nhập.");
+                                    switchToLogin();
+                                });
+                            } else {
+                                JSONObject error = new JSONObject(response.body());
+                                String message = error.has("message") ? error.getString("message") : "Đăng ký thất bại";
+                                javafx.application.Platform.runLater(() -> showError(message));
+                            }
+                        })
+                        .exceptionally(ex -> {
+                            javafx.application.Platform.runLater(() -> showError("Lỗi kết nối: " + ex.getMessage()));
+                            return null;
+                        });
+            } catch (Exception e) {
+                showError("Lỗi: " + e.getMessage());
+            }
         }
     }
 
@@ -300,6 +376,7 @@ public class MainViewController {
             registerJson.put("name", tempRegName);
             registerJson.put("email", tempRegEmail);
             registerJson.put("employerType", employerType);
+            registerJson.put("gender", tempGender);
             registerJson.put("password", tempRegPassword);
             registerJson.put("retypePass", tempRegRetypePass);
 
@@ -361,7 +438,7 @@ public class MainViewController {
             Stage currentStage = (Stage) rootPane.getScene().getWindow();
             currentStage.close();
 
-            FacebookView dashboard = new FacebookView();
+            ApplicantView dashboard = new ApplicantView();
             Stage dashboardStage = new Stage();
             dashboard.start(dashboardStage);
         } catch (Exception e) {

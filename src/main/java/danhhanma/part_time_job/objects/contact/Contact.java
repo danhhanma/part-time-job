@@ -1,14 +1,23 @@
 package danhhanma.part_time_job.objects.contact;
 
 public class Contact {
+    private long id;
     private String name;
-    private String avatarPath;
+    private String avatar;
     private String status;
 
-    public Contact(String name, String avatarPath, String status) {
+    public Contact(long id,String name, String avatar, String status) {
         this.name = name;
-        this.avatarPath = avatarPath;
+        this.id = id;
+        if(avatar==null|| avatar.isEmpty()) {
+            this.avatar = "/img/user.png";
+        } else {
+            this.avatar = avatar;
+        }
         this.status = status;
+    }
+
+    public Contact() {
     }
 
     public String getName() {
@@ -19,12 +28,25 @@ public class Contact {
         this.name = name;
     }
 
-    public String getAvatarPath() {
-        return avatarPath;
+
+    public String getId() {
+        return String.valueOf(id);
     }
 
-    public void setAvatarPath(String avatarPath) {
-        this.avatarPath = avatarPath;
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        if(avatar == null || avatar.isEmpty()) {
+            this.avatar = "/img/user.png";
+        } else {
+            this.avatar = avatar;
+        }
     }
 
     public String getStatus() {

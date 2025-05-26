@@ -1,10 +1,9 @@
-package danhhanma.part_time_job.chat;
+package danhhanma.part_time_job.chatbox;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import danhhanma.part_time_job.dto.Message;
 
 
 import java.util.ArrayList;
@@ -12,7 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class MessageParser {
-    public List<Message> parseMessages(String responseBody) {
+    public List<MessageDTO> parseMessages(String responseBody) {
         if (responseBody == null) {
             System.out.println("Response body is null");
             return Collections.emptyList();
@@ -27,12 +26,12 @@ public class MessageParser {
             JsonNode jsonNode = mapper.readTree(responseBody);
 
             // Initialize result list
-            List<Message> messages = new ArrayList<>();
+            List<MessageDTO> messages = new ArrayList<>();
 
             // Deserialize messagesFrom
             JsonNode messagesFromNode = jsonNode.get("messagesFrom");
             if (messagesFromNode != null && messagesFromNode.isArray()) {
-                List<Message> messagesFrom = mapper.convertValue(messagesFromNode, new TypeReference<List<Message>>() {});
+                List<MessageDTO> messagesFrom = mapper.convertValue(messagesFromNode, new TypeReference<List<MessageDTO>>() {});
                 messages.addAll(messagesFrom);
             } else {
                 System.out.println("messagesFrom is missing or not an array");
@@ -41,7 +40,7 @@ public class MessageParser {
             // Deserialize messagesTo
             JsonNode messagesToNode = jsonNode.get("messagesTo");
             if (messagesToNode != null && messagesToNode.isArray()) {
-                List<Message> messagesTo = mapper.convertValue(messagesToNode, new TypeReference<List<Message>>() {});
+                List<MessageDTO> messagesTo = mapper.convertValue(messagesToNode, new TypeReference<List<MessageDTO>>() {});
                 messages.addAll(messagesTo);
             } else {
                 System.out.println("messagesTo is missing or not an array");

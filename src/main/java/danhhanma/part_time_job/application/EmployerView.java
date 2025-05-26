@@ -1,26 +1,29 @@
-package danhhanma.part_time_job.chat;
+package danhhanma.part_time_job.application;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-public class ChatMain extends Application {
+public class EmployerView extends Application {
+
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage primaryStage) throws Exception {
         double screenWidth = javafx.stage.Screen.getPrimary().getBounds().getWidth();
         double screenHeight = javafx.stage.Screen.getPrimary().getBounds().getHeight();
         double appWidth = screenWidth * 4/5;
         double appHeight = screenHeight * 4/5;
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/danhhanma/part_time_job/ChatUi.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/danhhanma/part_time_job/EmployerView.fxml"));
         Parent root = loader.load();
         Scene scene = new Scene(root, appWidth, appHeight);
-        stage.setScene(scene);
-        stage.setTitle("Chat Application");
-        stage.show();
+        primaryStage.setScene(scene);
+        primaryStage.setMinWidth(950);
+
+        primaryStage.show();
     }
 
     public static void main(String[] args) {
-        launch();
+        launch(args);
     }
 }

@@ -1,6 +1,16 @@
 package danhhanma.part_time_job.objects.post;
 
 public class Account {
+    private long id;
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public long getId() {
+        return id;
+    }
+
     private String name;
     private String profileImg;
     private boolean isVerified;

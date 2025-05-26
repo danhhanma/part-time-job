@@ -27,7 +27,7 @@ public class UserInChat {
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
-    public static List<UserInChat> fetchUsersInChat(Long senderId) throws Exception {
+    public static List<UserInChat> fetchUsersInChat(Long userId) throws Exception {
         HttpResponse<String> response = null;
         try {
             String apiUrl = Config.get("api.url");
@@ -37,7 +37,7 @@ public class UserInChat {
                 throw new IllegalArgumentException("Missing api.url or token in config");
             }
 
-            String url = apiUrl + "/chat/users?senderId=" + senderId;
+            String url = apiUrl + "/chat/users?userId=" + userId;
 
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()

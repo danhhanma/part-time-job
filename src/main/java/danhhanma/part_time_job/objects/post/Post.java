@@ -4,6 +4,8 @@ import java.util.List;
 
 public class Post {
     private Account account;
+
+
     private PostAudience audience;
     private String date;
     private String caption;

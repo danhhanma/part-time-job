@@ -252,7 +252,14 @@ public class PostController implements Initializable {
         topReactionsContainer.setVisible(hasReactions);
         nbReactions.setVisible(hasReactions);
     }
-
+    public void setOpenContact(Runnable openContact){
+        imgProfile.setOnMouseClicked(event -> {
+            if (post != null && post.getAccount() != null) {
+                openContact.run();
+            }
+        });
+        imgProfile.setCursor(Cursor.HAND);
+    }
     public void setData(Post post){
         this.post = post;
         Image img;

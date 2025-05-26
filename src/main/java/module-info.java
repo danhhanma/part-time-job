@@ -10,7 +10,8 @@ module danhhanma.part_time_job {
     requires org.apache.commons.io;
     requires java.desktop;
 
-
+    opens danhhanma.part_time_job.objects.contact to com.fasterxml.jackson.databind;
+    opens danhhanma.part_time_job.chatbox;
     opens danhhanma.part_time_job to javafx.fxml;
     exports danhhanma.part_time_job.dashboard;
     opens danhhanma.part_time_job.dashboard to javafx.fxml;
@@ -21,11 +22,7 @@ module danhhanma.part_time_job {
     opens danhhanma.part_time_job.JobPost;
     exports danhhanma.part_time_job.JobPost;
 
-    // Thêm export và opens cho package chat
-    exports danhhanma.part_time_job.chat;
-    opens danhhanma.part_time_job.chat to javafx.fxml;
     exports danhhanma.part_time_job.chatbox;
-    opens danhhanma.part_time_job.chatbox to javafx.fxml;
 
     exports danhhanma.part_time_job.dto;
     opens danhhanma.part_time_job.dto to javafx.fxml;
